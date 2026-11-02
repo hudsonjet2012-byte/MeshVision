@@ -4,10 +4,9 @@
 #include <WebServer.h>
 #include <WebSocketsServer.h>
 
-// Edit these, or leave as-is to use the Cardputer's own hotspot
 const char* SSID = "YOUR_WIFI";
 const char* PASS = "YOUR_PASSWORD";
-const bool USE_HOTSPOT = true;  // true = join "Cardputer" / "12345678", browse 192.168.4.1
+const bool USE_HOTSPOT = true;  // true = own network "Cardputer" / "12345678", browse 192.168.4.1
 
 const int W = 240, H = 135;
 
@@ -65,11 +64,9 @@ void loop() {
   http.handleClient();
   ws.loop();
 
-  // ---- your drawing goes here (draw to canvas, not Display) ----
   canvas.fillScreen(TFT_BLACK);
   int t = millis() / 10;
   canvas.fillCircle(120 + 80 * sin(t * 0.05), 67 + 40 * cos(t * 0.07), 15, TFT_GREEN);
-  // --------------------------------------------------------------
 
   canvas.pushSprite(0, 0);
   if (ws.connectedClients() > 0)
