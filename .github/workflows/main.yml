@@ -1,0 +1,36 @@
+name: Build firmware
+
+on:
+  push:
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install PlatformIO
+        run: pip install platformio
+
+      - name: Build
+        run: pio run
+
+      - name: Merge into a single flashable image
+        run: |
+          python -m esptool --chip esp32s3 merge_bin -o cardputer-mirror.bin \
+            --flash_mode dio --flash_size 8MB \
+            0x0 .pio/build/cardputer/bootloader.bin \
+            0x8000 .pio/build/cardputer/partitions.bin \
+            0x10000 .pio/build/cardputer/firmware.bin
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: cardputer-firmware
+          path: |
+            cardputer-mirror.bin
+            .pio/build/cardputer/firmware.bin
